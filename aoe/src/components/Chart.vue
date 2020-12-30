@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 800px; height:800px">
+  <div>
     <svg ref="canvas"></svg>
   </div>
 
@@ -13,8 +13,12 @@ function handleDrag() {
   window.$bus.emit('changeDataPoints', [this.id, x, y]);
 }
 
+function handleDeleteNode() {
+    window.$bus.emit('deleteNode', this.id);
+}
+
 export default {
-  name: "Chart.vue",
+  name: "Chart",
   data() {
     return {
       svg: null,
@@ -24,9 +28,11 @@ export default {
   mounted() {
     window.$bus = this.$bus;
     this.$bus.on('changeDataPoints', this.handleDrag);
+    this.$bus.on('nodeColorChanged', this.handleNodeColorChanged);
   },
   beforeDestroy() {
     this.$bus.off('changeDataPoints', this.handleDrag);
+    this.$bus.off('nodeColorChanged', this.handleNodeColorChanged);
   },
   methods: {
     init() {
@@ -37,14 +43,13 @@ export default {
       }
       const _this = this;
       window.ws.onmessage = function (message) {
-        console.log(JSON.parse(message.data));
         let presetDataPointsColor = JSON.parse(message.data)['Color']['Point'];
         let presetDataPointsA = JSON.parse(message.data)['Opacity']['Point'];
         _this.presetDataPoints = [];
         console.log(presetDataPointsA, presetDataPointsColor);
         for(let i=0;i<presetDataPointsColor.length;i++) {
           _this.presetDataPoints.push({
-            index: Number(presetDataPointsA[i]['Index']),
+            Index: Number(presetDataPointsA[i]['Index']),
             R: Number(presetDataPointsColor[i]['R']),
             G: Number(presetDataPointsColor[i]['G']),
             B: Number(presetDataPointsColor[i]['B']),
@@ -52,42 +57,67 @@ export default {
           })
         }
         console.log(_this.presetDataPoints);
-        _this.presetDataPoints.forEach(point => {
-          _this.dataPoints.push([point['index'] + 1000, point['A'] + 100]);
-        });
+        _this.defineScales();
+        // _this.presetDataPoints.forEach(point => {
+        //   _this.dataPoints.push([point['index'], point['A']]);
+        // });
         _this.reDraw();
+        
       }
       if (this.svg !== null) {
         d3.selectAll('[key=chart]').remove();
       }
       this.svg = this.$refs['canvas'];
-      console.log(this.svg);
       d3.select(this.svg)
-          .attr("width", '100vw')
-          .attr("height", '80vh')
+          .attr("width", '40vw')
+          .attr("height", '40vh')
           .attr("key", "chart")
           .on('click', this.addNode);
+    },
+    defineScales() {
+        let minIndex = Math.min.apply(null, this.presetDataPoints.map((point) => {
+            return point.Index;
+        }));
+        let maxIndex = Math.max.apply(null, this.presetDataPoints.map((point) => {
+            return point.Index;
+        }));
+        console.log(minIndex, maxIndex);
+        this.xScale = d3.scaleLinear()
+            .domain([minIndex, maxIndex])
+            .range([50, parseInt(window.innerWidth * 0.4)]);
+        this.yScale = d3.scaleLinear()
+            .domain([0, 100])
+            .range([50, parseInt(window.innerHeight * 0.4)]);
+        this.invXScale = d3.scaleLinear()
+            .domain([50, parseInt(window.innerWidth * 0.4)])
+            .range([minIndex, maxIndex]);
+        this.invYScale = d3.scaleLinear()
+            .domain([50, parseInt(window.innerHeight * 0.4)])
+            .range([0, 100]);
     },
     rgb2hex(r, g, b) {
       return "#" + r.toString(16) + g.toString(16) + b.toString(16);
     },
     reDraw() {
-      console.log(this.dataPoints);
       d3.selectAll('[key=charNode]').remove();
       d3.selectAll('[key=nodeLine]').remove();
       d3.select(this.svg).append('polyline')
-      .attr("points", this.dataPoints)
-      .attr('x', this.dataPoints[0][0])
-      .attr('y', this.dataPoints[0][1])
+      .attr("points", this.presetDataPoints.map(
+          (point) => {
+              return [this.xScale(point.Index), this.yScale(point.A)]
+          }
+      ))
+      .attr('x', this.xScale(this.presetDataPoints[0].Index))
+      .attr('y', this.yScale(this.presetDataPoints[0].A))
       .attr('fill', 'none')
       .attr('stroke', 'black')
       .attr("stroke-width", 5)
       .attr("key", 'nodeLine');
-      for(let i=0;i<this.dataPoints.length;i++) {
+      for(let i=0;i<this.presetDataPoints.length;i++) {
         // eslint-disable-next-line no-unused-vars
         d3.select(this.svg).append('rect')
-            .attr("x", this.dataPoints[i][0] - 10)
-            .attr("y", this.dataPoints[i][1] - 10)
+            .attr("x", this.xScale(this.presetDataPoints[i].Index) - 10)
+            .attr("y", this.yScale(this.presetDataPoints[i].A) - 10)
             // .attr("fill", this.rgb2hex(this.presetDataPoints[i]['R'], this.presetDataPoints[i]['G'], this.presetDataPoints[i]['B']))
             .attr("fill", "#fe3ef0")
             .attr("opacity", 1)
@@ -95,6 +125,7 @@ export default {
             .attr("height", 20)
             .attr("key", "charNode")
             .attr("id", i)
+            .on('contextmenu', handleDeleteNode) 
             .call(
                 d3.drag()
                     .on('start', () => {})
@@ -104,22 +135,30 @@ export default {
       }
     },
     addNode() {
-      console.log(d3.event);
       const {x, y} = d3.event;
-      this.dataPoints.push([x, y]);
-      this.dataPoints.sort();
-      window.ws.send(JSON.stringify(this.dataPoints));
+      this.presetDataPoints.push([
+          this.invXScale(x),
+          this.invYScale(y)
+      ]);
+      this.presetDataPoints.sort((p1, p2) => {
+          return p1.Index - p2.Index;
+      });
+      window.ws.send(JSON.stringify(this.presetDataPoints));
       this.reDraw();
     },
     handleDrag(data) {
 
-      this.dataPoints[data[0]] = [data[1], data[2]];
-      this.dataPoints.sort();
-      this.reDraw();
+      this.presetDataPoints.sort((p1, p2) => {
+          return p1.Index - p2.Index;
+      });
 
-      window.ws.send(JSON.stringify(this.dataPoints));
+      window.ws.send(JSON.stringify(this.presetDataPoints));
       this.reDraw();
     },
+    handleNodeColorChanged(val, id) {
+        let {r, g, b} = val;
+        
+    }
   }
 }
 </script>
