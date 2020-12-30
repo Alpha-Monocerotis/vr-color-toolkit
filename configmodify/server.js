@@ -6,7 +6,7 @@ wss = new WebSocketServer({ port: 8000 });
 const fs = require('fs');
 var path = require('path');
 
-var configPath = path.join(__dirname, '1.xml');
+var configPath = path.join(__dirname, 'test.xml');
 
 wss.on('connection', function (ws) {
     var configString = fs.readFileSync(configPath, 'utf8');

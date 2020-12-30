@@ -2,196 +2,66 @@
 <Lut name="ct_lung_glass">
   <Color Interpolation="RGB">
     <Point>
-      <Index>-554</Index>
+      <Index>NaN</Index>
+      <R>57</R>
+      <G>158</G>
+      <B>206</B>
+    </Point>
+    <Point>
+      <Index>NaN</Index>
       <R>100</R>
       <G>100</G>
       <B>100</B>
     </Point>
     <Point>
-      <Index>-472</Index>
-      <R>20</R>
-      <G>6</G>
-      <B>6</B>
+      <Index>NaN</Index>
+      <R>170</R>
+      <G>214</G>
+      <B>234</B>
     </Point>
     <Point>
-      <Index>-444</Index>
-      <R>233</R>
-      <G>73</G>
-      <B>73</B>
+      <Index>NaN</Index>
+      <R>244</R>
+      <G>250</G>
+      <B>253</B>
     </Point>
     <Point>
-      <Index>-280</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
+      <Index>NaN</Index>
+      <R>255</R>
+      <G>255</G>
+      <B>255</B>
     </Point>
     <Point>
-      <Index>-268</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>-246</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>-162</Index>
-      <R>229</R>
-      <G>20</G>
-      <B>20</B>
-    </Point>
-    <Point>
-      <Index>10</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>30</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>167</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>230</Index>
-      <R>253</R>
-      <G>139</G>
-      <B>139</B>
-    </Point>
-    <Point>
-      <Index>238</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>312</Index>
-      <R>230</R>
-      <G>33</G>
-      <B>33</B>
-    </Point>
-    <Point>
-      <Index>484</Index>
-      <R>33</R>
-      <G>230</G>
-      <B>87</B>
-    </Point>
-    <Point>
-      <Index>644</Index>
-      <R>204</R>
-      <G>43</G>
-      <B>43</B>
-    </Point>
-    <Point>
-      <Index>772</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>856</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
-    </Point>
-    <Point>
-      <Index>1009</Index>
-      <R>78</R>
-      <G>35</G>
-      <B>230</B>
-    </Point>
-    <Point>
-      <Index>1033</Index>
-      <R>100</R>
-      <G>100</G>
-      <B>100</B>
+      <Index>NaN</Index>
+      <R>62</R>
+      <G>160</G>
+      <B>208</B>
     </Point>
   </Color>
   <Opacity>
     <Point>
-      <Index>-554</Index>
-      <A>55</A>
+      <Index>NaN</Index>
+      <A>0</A>
     </Point>
     <Point>
-      <Index>-472</Index>
-      <A>47</A>
+      <Index>NaN</Index>
+      <A>42</A>
     </Point>
     <Point>
-      <Index>-444</Index>
-      <A>29</A>
+      <Index>NaN</Index>
+      <A>78</A>
     </Point>
     <Point>
-      <Index>-280</Index>
-      <A>17</A>
+      <Index>NaN</Index>
+      <A>88</A>
     </Point>
     <Point>
-      <Index>-268</Index>
-      <A>34</A>
+      <Index>NaN</Index>
+      <A>86</A>
     </Point>
     <Point>
-      <Index>-246</Index>
-      <A>31</A>
-    </Point>
-    <Point>
-      <Index>-162</Index>
-      <A>38</A>
-    </Point>
-    <Point>
-      <Index>10</Index>
-      <A>46</A>
-    </Point>
-    <Point>
-      <Index>30</Index>
-      <A>23</A>
-    </Point>
-    <Point>
-      <Index>167</Index>
-      <A>29</A>
-    </Point>
-    <Point>
-      <Index>230</Index>
-      <A>43</A>
-    </Point>
-    <Point>
-      <Index>238</Index>
-      <A>49</A>
-    </Point>
-    <Point>
-      <Index>312</Index>
-      <A>12</A>
-    </Point>
-    <Point>
-      <Index>484</Index>
-      <A>21</A>
-    </Point>
-    <Point>
-      <Index>644</Index>
-      <A>47</A>
-    </Point>
-    <Point>
-      <Index>772</Index>
-      <A>48</A>
-    </Point>
-    <Point>
-      <Index>856</Index>
-      <A>48</A>
-    </Point>
-    <Point>
-      <Index>1009</Index>
-      <A>30</A>
-    </Point>
-    <Point>
-      <Index>1033</Index>
-      <A>38</A>
+      <Index>NaN</Index>
+      <A>0</A>
     </Point>
   </Opacity>
   <WindowLevel>

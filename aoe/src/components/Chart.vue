@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="border: 1px solid #000">
     <svg ref="canvas"></svg>
   </div>
 
@@ -7,15 +7,6 @@
 
 <script>
 import * as d3 from 'd3';
-
-function handleDrag() {
-  const {x, y} = d3.event;
-  window.$bus.emit('changeDataPoints', [this.id, x, y]);
-}
-
-function handleDeleteNode() {
-    window.$bus.emit('deleteNode', this.id);
-}
 
 export default {
   name: "Chart",
@@ -27,11 +18,9 @@ export default {
   },
   mounted() {
     window.$bus = this.$bus;
-    this.$bus.on('changeDataPoints', this.handleDrag);
     this.$bus.on('nodeColorChanged', this.handleNodeColorChanged);
   },
   beforeDestroy() {
-    this.$bus.off('changeDataPoints', this.handleDrag);
     this.$bus.off('nodeColorChanged', this.handleNodeColorChanged);
   },
   methods: {
@@ -46,7 +35,6 @@ export default {
         let presetDataPointsColor = JSON.parse(message.data)['Color']['Point'];
         let presetDataPointsA = JSON.parse(message.data)['Opacity']['Point'];
         _this.presetDataPoints = [];
-        console.log(presetDataPointsA, presetDataPointsColor);
         for(let i=0;i<presetDataPointsColor.length;i++) {
           _this.presetDataPoints.push({
             Index: Number(presetDataPointsA[i]['Index']),
@@ -56,11 +44,7 @@ export default {
             A: Number(presetDataPointsA[i]['A'])
           })
         }
-        console.log(_this.presetDataPoints);
         _this.defineScales();
-        // _this.presetDataPoints.forEach(point => {
-        //   _this.dataPoints.push([point['index'], point['A']]);
-        // });
         _this.reDraw();
         
       }
@@ -72,7 +56,25 @@ export default {
           .attr("width", '40vw')
           .attr("height", '40vh')
           .attr("key", "chart")
-          .on('click', this.addNode);
+          .on('click', function(d, i, group) {
+              let event = {
+                  x: d.layerX,
+                  y: d.layerY
+              }
+              const {x, y} = event;
+                _this.presetDataPoints.push({
+                    Index : _this.invXScale(x),
+                    R : 100,
+                    G : 100,
+                    B : 100,
+                    A : _this.invYScale(y)
+                });
+                _this.presetDataPoints.sort((p1, p2) => {
+                    return p1.Index - p2.Index;
+                });
+                window.ws.send(JSON.stringify(_this.presetDataPoints));
+                _this.reDraw();
+          });
     },
     defineScales() {
         let minIndex = Math.min.apply(null, this.presetDataPoints.map((point) => {
@@ -81,18 +83,17 @@ export default {
         let maxIndex = Math.max.apply(null, this.presetDataPoints.map((point) => {
             return point.Index;
         }));
-        console.log(minIndex, maxIndex);
         this.xScale = d3.scaleLinear()
             .domain([minIndex, maxIndex])
-            .range([50, parseInt(window.innerWidth * 0.4)]);
+            .range([50, parseInt(window.innerWidth * 0.4) - 50]);
         this.yScale = d3.scaleLinear()
             .domain([0, 100])
-            .range([50, parseInt(window.innerHeight * 0.4)]);
+            .range([parseInt(window.innerHeight * 0.4) - 50, 50]);
         this.invXScale = d3.scaleLinear()
-            .domain([50, parseInt(window.innerWidth * 0.4)])
+            .domain([50, parseInt(window.innerWidth * 0.4) - 50])
             .range([minIndex, maxIndex]);
         this.invYScale = d3.scaleLinear()
-            .domain([50, parseInt(window.innerHeight * 0.4)])
+            .domain([parseInt(window.innerHeight * 0.4) - 50, 50])
             .range([0, 100]);
     },
     rgb2hex(r, g, b) {
@@ -101,6 +102,7 @@ export default {
     reDraw() {
       d3.selectAll('[key=charNode]').remove();
       d3.selectAll('[key=nodeLine]').remove();
+      const _this = this;
       d3.select(this.svg).append('polyline')
       .attr("points", this.presetDataPoints.map(
           (point) => {
@@ -118,46 +120,69 @@ export default {
         d3.select(this.svg).append('rect')
             .attr("x", this.xScale(this.presetDataPoints[i].Index) - 10)
             .attr("y", this.yScale(this.presetDataPoints[i].A) - 10)
-            // .attr("fill", this.rgb2hex(this.presetDataPoints[i]['R'], this.presetDataPoints[i]['G'], this.presetDataPoints[i]['B']))
-            .attr("fill", "#fe3ef0")
+            .attr("fill", this.rgb2hex(this.presetDataPoints[i]['R'], this.presetDataPoints[i]['G'], this.presetDataPoints[i]['B']))
+            // .attr("fill", "#fe3ef0")
             .attr("opacity", 1)
             .attr("width", 20)
             .attr("height", 20)
             .attr("key", "charNode")
             .attr("id", i)
-            .on('contextmenu', handleDeleteNode) 
+            .on("click", function(d, i, group) {
+                window.event.stopPropagation();
+                let pointID = Number(this.id);
+                _this.$bus.emit("selectNode", {
+                    id : pointID,
+                    r : _this.presetDataPoints[pointID].R,
+                    g : _this.presetDataPoints[pointID].G,
+                    b : _this.presetDataPoints[pointID].B,
+                    a : _this.presetDataPoints[pointID].A,
+                });
+            })
+            .on('contextmenu', function(d, i, group) {
+                window.event.preventDefault();
+                let index = Number(this.id);
+                _this.presetDataPoints.splice(index, 1);
+                window.ws.send(JSON.stringify(_this.presetDataPoints));
+                _this.reDraw();
+            })
             .call(
                 d3.drag()
                     .on('start', () => {})
                     .on('end', () => {})
-                    .on('drag', handleDrag)
+                    .on('drag', function(d, i, group) {
+                        let event = {
+                            x : d.sourceEvent.layerX,
+                            y : d.sourceEvent.layerY
+                        }
+                        const {x, y} = event;
+                        // _this.$bus.emit('changeDataPoints', [this.id, x, y]);
+                        if(this.id > 0 && this.id < _this.presetDataPoints.length - 1) {
+                            let xx = _this.invXScale(x);
+                            let low_bound_x = _this.presetDataPoints[Number(this.id) - 1].Index;
+                            let high_bound_x = _this.presetDataPoints[Number(this.id) + 1].Index;
+                            if (xx <= low_bound_x) xx = low_bound_x;
+                            if (xx >= high_bound_x) xx = high_bound_x;
+                            _this.presetDataPoints[this.id].Index = xx;
+                            _this.presetDataPoints[this.id].A = _this.invYScale(y);
+                        } else {
+                            _this.presetDataPoints[this.id].Index = _this.invXScale(x);
+                            _this.presetDataPoints[this.id].A = _this.invYScale(y);
+                        }
+                        _this.presetDataPoints.sort((p1, p2) => {
+                            return p1.Index - p2.Index;
+                        });
+                        window.ws.send(JSON.stringify(_this.presetDataPoints));
+                        _this.reDraw();
+                    })
             );
       }
     },
-    addNode() {
-      const {x, y} = d3.event;
-      this.presetDataPoints.push([
-          this.invXScale(x),
-          this.invYScale(y)
-      ]);
-      this.presetDataPoints.sort((p1, p2) => {
-          return p1.Index - p2.Index;
-      });
-      window.ws.send(JSON.stringify(this.presetDataPoints));
-      this.reDraw();
-    },
-    handleDrag(data) {
-
-      this.presetDataPoints.sort((p1, p2) => {
-          return p1.Index - p2.Index;
-      });
-
-      window.ws.send(JSON.stringify(this.presetDataPoints));
-      this.reDraw();
-    },
     handleNodeColorChanged(val, id) {
         let {r, g, b} = val;
-        
+        this.presetDataPoints[id].R = r;
+        this.presetDataPoints[id].G = g;
+        this.presetDataPoints[id].B = b;
+        this.reDraw();
     }
   }
 }
