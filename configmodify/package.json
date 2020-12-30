@@ -1,0 +1,16 @@
+{
+  "name": "configmodify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ws": "^7.2.4",
+    "xml2js": "^0.4.23"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
