@@ -1,7 +1,7 @@
 <template>
   <div class="dash-board">
     <Chart ref="chart" class="chart"/>
-    <div style="padding-top: 100px; padding-left:50px;"> 
+    <div style="padding-top: 100px; padding-left:80px;"> 
         <Photoshop  v-model="colors" v-if="showColorPicker"/>
     </div>
   </div>

@@ -3,9 +3,21 @@
   <Color Interpolation="RGB">
     <Point>
       <Index>NaN</Index>
-      <R>57</R>
-      <G>158</G>
-      <B>206</B>
+      <R>52</R>
+      <G>187</G>
+      <B>120</B>
+    </Point>
+    <Point>
+      <Index>NaN</Index>
+      <R>199</R>
+      <G>37</G>
+      <B>37</B>
+    </Point>
+    <Point>
+      <Index>NaN</Index>
+      <R>58</R>
+      <G>172</G>
+      <B>223</B>
     </Point>
     <Point>
       <Index>NaN</Index>
@@ -15,21 +27,21 @@
     </Point>
     <Point>
       <Index>NaN</Index>
-      <R>170</R>
-      <G>214</G>
-      <B>234</B>
+      <R>69</R>
+      <G>165</G>
+      <B>213</B>
     </Point>
     <Point>
       <Index>NaN</Index>
-      <R>244</R>
-      <G>250</G>
-      <B>253</B>
+      <R>100</R>
+      <G>100</G>
+      <B>100</B>
     </Point>
     <Point>
       <Index>NaN</Index>
-      <R>255</R>
-      <G>255</G>
-      <B>255</B>
+      <R>234</R>
+      <G>46</G>
+      <B>46</B>
     </Point>
     <Point>
       <Index>NaN</Index>
@@ -45,19 +57,27 @@
     </Point>
     <Point>
       <Index>NaN</Index>
-      <A>42</A>
+      <A>24</A>
     </Point>
     <Point>
       <Index>NaN</Index>
-      <A>78</A>
+      <A>12</A>
     </Point>
     <Point>
       <Index>NaN</Index>
-      <A>88</A>
+      <A>29</A>
     </Point>
     <Point>
       <Index>NaN</Index>
-      <A>86</A>
+      <A>15</A>
+    </Point>
+    <Point>
+      <Index>NaN</Index>
+      <A>51</A>
+    </Point>
+    <Point>
+      <Index>NaN</Index>
+      <A>13</A>
     </Point>
     <Point>
       <Index>NaN</Index>

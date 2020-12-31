@@ -83,6 +83,7 @@ export default {
         let maxIndex = Math.max.apply(null, this.presetDataPoints.map((point) => {
             return point.Index;
         }));
+        // console.log(window.innerHeight);
         this.xScale = d3.scaleLinear()
             .domain([minIndex, maxIndex])
             .range([50, parseInt(window.innerWidth * 0.4) - 50]);
@@ -130,6 +131,24 @@ export default {
             .on("click", function(d, i, group) {
                 window.event.stopPropagation();
                 let pointID = Number(this.id);
+                d3.selectAll(`[key=nodeOpacity]`).remove();
+                        let str = `Hu: ${parseInt(_this.presetDataPoints[this.id].Index)}
+                          \n alpha: ${parseInt(_this.presetDataPoints[this.id].A)}
+                          \n R: ${_this.presetDataPoints[this.id].R}
+                          \n G: ${_this.presetDataPoints[this.id].G}
+                          \n B: ${_this.presetDataPoints[this.id].B}`
+                        let strs = str.split('\n');
+                        let label = d3.select(_this.svg).append('text')
+                          .attr("x", 10)
+                          .attr("y", 10)
+                          .attr("key", `nodeOpacity`)
+                        let lables = label.selectAll('tspan')
+                                    .data(strs)
+                                    .enter()
+                                    .append("tspan")
+                                    .attr("x",label.attr("x"))
+                                    .attr("dy","0.7em")
+                                    .text(function(d){return d})
                 _this.$bus.emit("selectNode", {
                     id : pointID,
                     r : _this.presetDataPoints[pointID].R,
@@ -155,18 +174,52 @@ export default {
                             y : d.sourceEvent.layerY
                         }
                         const {x, y} = event;
+                        d3.selectAll(`[key=nodeOpacity]`).remove();
+                        let str = `Hu: ${parseInt(_this.presetDataPoints[this.id].Index)}
+                          \n alpha: ${parseInt(_this.presetDataPoints[this.id].A)}
+                          \n R: ${_this.presetDataPoints[this.id].R}
+                          \n G: ${_this.presetDataPoints[this.id].G}
+                          \n B: ${_this.presetDataPoints[this.id].B}`
+                        let strs = str.split('\n');
+                        let label = d3.select(_this.svg).append('text')
+                          .attr("x", 10)
+                          .attr("y", 10)
+                          .attr("key", `nodeOpacity`)
+                        let lables = label.selectAll('tspan')
+                                    .data(strs)
+                                    .enter()
+                                    .append("tspan")
+                                    .attr("x",label.attr("x"))
+                                    .attr("dy","0.7em")
+                                    .text(function(d){return d})
                         // _this.$bus.emit('changeDataPoints', [this.id, x, y]);
                         if(this.id > 0 && this.id < _this.presetDataPoints.length - 1) {
                             let xx = _this.invXScale(x);
                             let low_bound_x = _this.presetDataPoints[Number(this.id) - 1].Index;
                             let high_bound_x = _this.presetDataPoints[Number(this.id) + 1].Index;
+                            
                             if (xx <= low_bound_x) xx = low_bound_x;
                             if (xx >= high_bound_x) xx = high_bound_x;
+
+                            let yy = _this.invYScale(y);
+                            let low_bound_y = 0;
+                            let high_bound_y = 100;
+
+                            if(yy <= low_bound_y) yy = low_bound_y;
+                            if(yy >= high_bound_y) yy = high_bound_y;
+
+
                             _this.presetDataPoints[this.id].Index = xx;
-                            _this.presetDataPoints[this.id].A = _this.invYScale(y);
+                            _this.presetDataPoints[this.id].A = yy;
                         } else {
+                            let yy = _this.invYScale(y);
+                            let low_bound_y = 0;
+                            let high_bound_y = 100;
+
+                            if(yy <= low_bound_y) yy = low_bound_y;
+                            if(yy >= high_bound_y) yy = high_bound_y;
                             _this.presetDataPoints[this.id].Index = _this.invXScale(x);
-                            _this.presetDataPoints[this.id].A = _this.invYScale(y);
+                            _this.presetDataPoints[this.id].A = yy;
                         }
                         _this.presetDataPoints.sort((p1, p2) => {
                             return p1.Index - p2.Index;
@@ -183,6 +236,24 @@ export default {
         this.presetDataPoints[id].G = g;
         this.presetDataPoints[id].B = b;
         this.reDraw();
+        d3.selectAll(`[key=nodeOpacity]`).remove();
+        let str = `Hu: ${parseInt(this.presetDataPoints[id].Index)}
+          \n alpha: ${parseInt(this.presetDataPoints[id].A)}
+          \n R: ${this.presetDataPoints[id].R}
+          \n G: ${this.presetDataPoints[id].G}
+          \n B: ${this.presetDataPoints[id].B}`
+        let strs = str.split('\n');
+        let label = d3.select(this.svg).append('text')
+          .attr("x", 10)
+          .attr("y", 10)
+          .attr("key", `nodeOpacity`)
+        let lables = label.selectAll('tspan')
+                    .data(strs)
+                    .enter()
+                    .append("tspan")
+                    .attr("x",label.attr("x"))
+                    .attr("dy","0.7em")
+                    .text(function(d){return d})
     }
   }
 }
